@@ -1,4 +1,9 @@
 const passport = require('passport');
+const {
+  createUser,
+  checkUser,
+  updateLastAccess,
+} = require('./Model/usermodel');
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 passport.use(
@@ -9,11 +14,27 @@ passport.use(
       callbackURL: 'http://localhost:5000/auth/google/callback',
       passReqToCallback: true,
     },
-    function (request, accessToken, refreshToken, profile, done) {
+    async function (request, accessToken, refreshToken, profile, done) {
       //   User.findOrCreate({ googleId: profile.id }, function (err, user) {
       //     return done(err, user);
-      //   });
-      done(null, profile);
+      //   }); // this is for storing data in database
+      const { displayName, email } = profile;
+      const created_at = new Date();
+      console.log(displayName, email);
+      try {
+        const checkUsr = await checkUser(email);
+        if (checkUsr.length === 0) {
+          await createUser(displayName, email, created_at);
+          done(null, profile);
+        } else {
+          const updateData = [new Date(), email];
+          await updateLastAccess(updateData);
+          done(null, profile);
+        }
+      } catch (error) {
+        console.log('error is ', error);
+        return done(error);
+      }
     }
   )
 );
