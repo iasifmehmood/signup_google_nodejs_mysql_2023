@@ -3,7 +3,7 @@ const {
   createUser,
   checkUser,
   updateLastAccess,
-} = require('./Model/usermodel');
+} = require('../Model/usermodel');
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 passport.use(
