@@ -31,4 +31,14 @@ Router.get('/auth/google/success', isLoggedIn, (req, res) => {
   const name = req.user.displayName;
   return res.status(200).send(`hello there! ${name}`);
 });
+
+Router.get('/logout', (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect('/');
+  });
+});
+
 module.exports = Router;
